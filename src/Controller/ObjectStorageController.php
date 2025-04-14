@@ -141,7 +141,7 @@ class ObjectStorageController extends \Think\Controller{
         }
 
         $config = C('UPLOAD_TYPE_' . strtoupper($type));
-        if ($get_data['size'] && !$this->checkSize($get_data['size'], $config['maxSize'])) {
+        if ($get_data['file_size'] && !$this->checkSize($get_data['file_size'], $config['maxSize'])) {
             $this->ajaxReturn(array('err_msg' => '上传文件大小不符！' . '(<=' . floor($config['maxSize'] / 1024 / 1024) . 'MB)'));
         }
 
