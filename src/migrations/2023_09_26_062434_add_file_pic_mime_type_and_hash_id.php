@@ -1,7 +1,6 @@
 <?php
 
 use Illuminate\Support\Facades\Schema;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
@@ -10,36 +9,17 @@ class AddFilePicMimeTypeAndHashId extends Migration
 
     public function beforeCmmUp()
     {
-        //
     }
 
     public function beforeCmmDown()
     {
-        //
     }
 
-    /**
-     * Run the migrations.
-     *
-     * @return void
-     */
     public function up()
     {
-        Schema::table('qs_file_pic', function (Blueprint $table) {
-            //
-            $columns = DB::select("show columns from qs_file_pic WHERE FIELD in ('mime_type','hash_id');");
-
-            $exists_mime_type = false;
-            $exists_hash_id = false;
-
-            $columns && collect($columns)->each(function ($column) use(&$exists_mime_type, &$exists_hash_id) {
-                if ($column->Field === 'mime_type'){
-                    $exists_mime_type = true;
-                }
-                if ($column->Field === 'hash_id'){
-                    $exists_hash_id = true;
-                }
-            });
+        Schema::table('file_pic', function (Blueprint $table) {
+            $exists_mime_type = Schema::hasColumn('file_pic', 'mime_type');
+            $exists_hash_id = Schema::hasColumn('file_pic', 'hash_id');
 
             if($exists_mime_type){
                 $table->string('mime_type', 200)->default('')->change();
@@ -61,26 +41,18 @@ class AddFilePicMimeTypeAndHashId extends Migration
         });
     }
 
-    /**
-     * Reverse the migrations.
-     *
-     * @return void
-     */
     public function down()
     {
-        Schema::table('qs_file_pic', function (Blueprint $table) {
-            //
+        Schema::table('file_pic', function (Blueprint $table) {
             $table->string('mime_type', 200)->default('')->change();
         });
     }
 
     public function afterCmmUp()
     {
-        //
     }
 
     public function afterCmmDown()
     {
-        //
     }
 }

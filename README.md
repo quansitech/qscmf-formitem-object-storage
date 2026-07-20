@@ -16,6 +16,18 @@ composer require quansitech/qscmf-formitem-object-storage
 
 
 
+## 数据库表命名约定
+
+migration 不硬编码表前缀，统一用**裸表名**（`file_pic`）调用 prefix-aware 的 `Schema` facade；物理表前缀由项目侧 `DB_PREFIX` 动态拼接：
+
+```
+物理表名 = DB_PREFIX + 'file_pic'   // DB_PREFIX='qs_' → qs_file_pic
+```
+
+列/索引存在性判断同样走 `Schema` facade（`Schema::hasColumn` / `Schema::hasIndex`），兼容 MySQL 与 PostgreSQL，**不要**把表名嵌进 `DB::select(...)` 裸 SQL——此类调用 Laravel 不会拼前缀。消费方只需保证 `DB_PREFIX` 与物理表名一致即可。
+
+
+
 #### 替换 *oss/cos* 上传组件用法
 
 ```text
