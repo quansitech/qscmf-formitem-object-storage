@@ -18,8 +18,8 @@ class AlterFilePicAddIdxHashId extends Migration
     public function up()
     {
         Schema::table('file_pic', function (Blueprint $table) {
-            if (! Schema::hasIndex('file_pic', 'idx_hashId')) {
-                $table->index('hash_id','idx_hashId');
+            if (! Schema::hasIndex('file_pic', ['hash_id'], 'btree')) {
+                $table->index('hash_id', 'idx_hashId');
             }
         });
     }
