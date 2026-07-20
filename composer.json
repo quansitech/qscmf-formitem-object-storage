@@ -11,8 +11,8 @@
     }
   ],
   "require": {
-    "php": ">=8.1.12",
-    "tiderjian/think-core": ">=14.0.0",
+    "php": ">=8.3",
+    "tiderjian/think-core": "^15.2",
     "aliyuncs/oss-sdk-php": "^2.0",
     "volcengine/volc-sdk-php": "^1.0",
     "qcloud/cos-sdk-v5": ">=2.0",
