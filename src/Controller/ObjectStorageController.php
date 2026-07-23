@@ -5,6 +5,8 @@ namespace FormItem\ObjectStorage\Controller;
 use FormItem\ObjectStorage\Lib\Common;
 use FormItem\ObjectStorage\Lib\Vendor\Context;
 use Illuminate\Database\Capsule\Manager as Capsule;
+use Qscmf\Lib\FileUploadManager\File;
+use Qscmf\Lib\FileUploadManager\Manager;
 
 class ObjectStorageController extends \Think\Controller{
 
@@ -79,8 +81,11 @@ class ObjectStorageController extends \Think\Controller{
             $this->ajaxReturn($params['file_data']);
         }
 
+        // 写库走 FileUploadManager：File 类的 typed properties 在落盘前最后一步过滤掉
+        // $file_data 中表不存在的字段（如 original），与宿主 UploadController 同路。
+        // 注意：$file_data 本身保持完整不动，上游 Hook/handleCbRes 照常消费 original。
         try {
-            $r = Capsule::table('file_pic')->insertGetId($file_data);
+            $r = (new Manager(new File($file_data)))->add();
         } catch (\Exception $e) {
             E($e->getMessage());
         }
