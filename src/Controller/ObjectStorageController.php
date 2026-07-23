@@ -4,6 +4,7 @@ namespace FormItem\ObjectStorage\Controller;
 
 use FormItem\ObjectStorage\Lib\Common;
 use FormItem\ObjectStorage\Lib\Vendor\Context;
+use Illuminate\Database\Capsule\Manager as Capsule;
 
 class ObjectStorageController extends \Think\Controller{
 
@@ -78,24 +79,24 @@ class ObjectStorageController extends \Think\Controller{
             $this->ajaxReturn($params['file_data']);
         }
 
-        $r = D('FilePic')->createAdd($file_data);
-        if($r === false){
-            E(D('FilePic')->getError());
+        try {
+            $r = Capsule::table('file_pic')->insertGetId($file_data);
+        } catch (\Exception $e) {
+            E($e->getMessage());
         }
-        else{
-            if ($resize && !isset($body_arr['resize'])){
-                $body_arr['resize'] = $resize;
-            }
-            $file_data = Common::handleCbRes($file_data, $os_cls, $body_arr['resize']);
-            $res = [
-                'file_id' => $r,
-                'file_url' => $file_data['url'],
-                'status' => 1
-            ];
-            isset($file_data['small_url']) && $res['small_url'] = $file_data['small_url'];
 
-            $this->ajaxReturn($res);
+        if ($resize && !isset($body_arr['resize'])){
+            $body_arr['resize'] = $resize;
         }
+        $file_data = Common::handleCbRes($file_data, $os_cls, $body_arr['resize']);
+        $res = [
+            'file_id' => $r,
+            'file_url' => $file_data['url'],
+            'status' => 1
+        ];
+        isset($file_data['small_url']) && $res['small_url'] = $file_data['small_url'];
+
+        $this->ajaxReturn($res);
     }
 
     private function checkSize($size, $config_max_size): bool
@@ -156,7 +157,7 @@ class ObjectStorageController extends \Think\Controller{
     }
 
     public function download(int $file_id){
-        $ent = D("FilePic")->where(['id' => $file_id])->find();
+        $ent = (array)Capsule::table('file_pic')->where('id', $file_id)->first();
         $url = showFileUrl($file_id);
         header("Content-type: application/force-download");
         header('Content-Disposition: inline; filename="' . $ent['title'] . '"');
